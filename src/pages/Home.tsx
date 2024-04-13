@@ -7,17 +7,9 @@ import NavBar from '../components/Navbar'
 import { Alert, AlertColor, Button, Grid, Snackbar } from '@mui/material'
 import TaskTable from '../components/TaskTable'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { createTask } from '../store/modules/task/task.slice'
 import { StyleLabel, StyleInput } from '../styles/task.styles'
-import apiService, { interceptor } from '../config/services/api.service'
-import { UserType, userLogin } from '../store/modules/user/user.login.slice'
-
-interface TaskType {
-    id: string;
-    name: string;
-    description: string;
-    createdAt: { dia: string, mes: string, ano: string } | undefined
-}
+import apiService from '../config/services/api.service'
+import { TaskType, createTask } from '../store/modules/task/task.slice'
 
 interface UserLogged {
     id: string | undefined,
@@ -28,8 +20,28 @@ interface UserLogged {
 
 const Home: React.FC = () => {
 
+    // const userLoggedRedux = useAppSelector((state) => state.userLogin)
+    const tasksRedux = useAppSelector((state) => state.tasks)
+    const dispatch = useAppDispatch();
+
     const token = localStorage.getItem("token")
     const navigate = useNavigate()
+
+    const [alertMessage, setAlertMessage] = useState<string>()
+    const [openAlert, setOpenAlert] = useState<boolean>(false)
+    const [alertColor, setAlertColor] = useState<AlertColor>('error' || 'info' || 'success' || 'warning')
+
+    const [nameTask, setNameTask] = useState<string>('')
+    const [descriptionTask, setDescripitionTask] = useState<string>('')
+    const [editMode, setEditmode] = useState<string>('')
+    // const [taskData, setTaskData] = useState<TaskType[]>([])
+    // const [userData, setUserData] = useState<UserLogged>()
+
+    const dataCreated = new Date()
+    const day = dataCreated.getDate().toString().padStart(2, '0')
+    const month = String(dataCreated.getMonth() + 1).padStart(2, '0');
+    const year = String(dataCreated.getFullYear()).padStart(2, '0')
+
     const navUrl = (url: string) => {
         navigate(url)
     }
@@ -41,42 +53,22 @@ const Home: React.FC = () => {
         }
     }, [token])
 
-
-    const userLogged = useAppSelector((state) => state.userLogin)
-    // const taskRedux = useAppSelector((state) => state)
-
-    const [alertMessage, setAlertMessage] = useState<string>()
-    const [openAlert, setOpenAlert] = useState<boolean>(false)
-    const [alertColor, setAlertColor] = useState<AlertColor>('error' || 'info' || 'success' || 'warning')
-
-    const [nameTask, setNameTask] = useState<string>('')
-    const [descriptionTask, setDescripitionTask] = useState<string>('')
-    const [editMode, setEditmode] = useState<string>('')
-    const [taskData, setTakData] = useState<TaskType[]>([])
-    const [userData, setUserData] = useState<UserLogged>()
-
-    const dataCreated = new Date()
-    const day = dataCreated.getDate().toString().padStart(2, '0')
-    const month = String(dataCreated.getMonth() + 1).padStart(2, '0');
-    const year = String(dataCreated.getFullYear()).padStart(2, '0')
-
-    useEffect(() => {
-        function getLogged() {
-            if (userLogged) {
-                setUserData({
-                    id: userLogged.id,
-                    name: userLogged.name,
-                    email: userLogged.email,
-                    token: userLogged?.token
-                })
-            }
-        }
-        getLogged()
-    }, [])
-
+    // useEffect(() => {
+    //     function getLogged() {
+    //         if (userLoggedRedux) {
+    //             setUserData({
+    //                 id: userLoggedRedux.id,
+    //                 name: userLoggedRedux.name,
+    //                 email: userLoggedRedux.email,
+    //                 token: userLoggedRedux?.token
+    //             })
+    //         }
+    //     }
+    //     getLogged()
+    // }, [])
 
     const addTask = async () => {
-        const newTask = {
+        const newTask: TaskType = {
             id: '',
             name: nameTask,
             description: descriptionTask,
@@ -87,16 +79,26 @@ const Home: React.FC = () => {
             }
         }
 
-        await apiService.post('/tasks', newTask, {
-            headers: {
-                Authorization: `Bearer ${userData?.token!}`
-            }
-        }).then(response => {
-            setTakData(response.data.data)
-            setAlertMessage(response.data.message)
-            setAlertColor("success")
+        // await apiService.post('/tasks', newTask, {
+        //     headers: {
+        //         Authorization: `Bearer ${userData?.token!}`
+        //     }
+        // }).then(response => {
+        //     setTakData([...tasksRedux.data, response.data.data])
+        //     setAlertMessage(response.data.message)
+        //     setAlertColor("success")
+        //     setOpenAlert(true)
+        // })
+
+        const { payload } = await dispatch(createTask(newTask))
+        if (payload) {
+            setAlertMessage('Tarefa criada com sucesso')
+            setAlertColor('success')
             setOpenAlert(true)
-        })
+        }
+        setAlertMessage('Erro ao criar tarefa')
+        setAlertColor('error')
+        setOpenAlert(true)
     }
 
     return (
@@ -110,7 +112,9 @@ const Home: React.FC = () => {
                     <StyleInput placeholder='Digite a descrição da tarefa' value={descriptionTask} onChange={(e) => setDescripitionTask(e.target.value)} name='descriptionTask' type='text' />
                     <Button sx={{ marginLeft: '20px' }} onClick={addTask} color={editMode ? 'success' : 'primary'} variant='contained'>{editMode ? 'Salvar' : 'Cadastar'}</Button>
                 </Grid>
-                <TaskTable tasks={taskData} editar={() => console.log()} deletar={() => console.log()} />
+                {tasksRedux.data.length &&
+                    <TaskTable isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />
+                } : <></>
             </Grid>
             <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1600} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>

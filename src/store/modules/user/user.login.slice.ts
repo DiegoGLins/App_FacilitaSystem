@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import apiService from "../../../config/services/api.service";
+import apiService, { ResponseApiUser } from "../../../config/services/api.service";
 
 export interface UserType {
     id: string;
@@ -10,13 +10,8 @@ export interface UserType {
     loading: boolean
 }
 
-const initialState: UserType = {
-    id: '',
-    email: '',
-    name: '',
-    password: '',
-    token: '',
-    loading: false
+const initialState = {
+    user: {} as UserType
 }
 
 interface UserLogin {
@@ -24,11 +19,16 @@ interface UserLogin {
     password: string
 }
 
-export const login = createAsyncThunk('/auth/user', async (user: UserLogin) => {
+export const login = createAsyncThunk('/auth/user', async (user: UserLogin): Promise<ResponseApiUser> => {
     const response = await apiService.post('/auth', user)
     if (response.status === 200) {
         localStorage.setItem("token", JSON.stringify(response.data?.token))
-        return response.data
+        return response.data.user
+    }
+    return {
+        ok: response.data?.ok,
+        code: response.data?.code,
+        message: response.data?.message
     }
 })
 
@@ -42,15 +42,15 @@ const userLoginSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state) => {
-            state.loading = true;
+            state.user.loading = true;
             return state
         }).addCase(login.fulfilled, (state, action) => {
-            state.loading = false;
-            state.id = action.payload.id,
-                state.name = action.payload.name,
-                state.email = action.payload.email,
-                state.password = action.payload.password
-            state.token = action.payload.token
+            state.user.loading = false;
+            state.user.id = action.payload.data.id,
+                state.user.name = action.payload.data.name,
+                state.user.email = action.payload.data.email,
+                state.user.password = action.payload.data.password
+            state.user.token = action.payload.data.token
             return state
         })
     }

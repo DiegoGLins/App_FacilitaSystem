@@ -1,58 +1,93 @@
-import { Button, Grid, Typography } from "@mui/material";
-import { StyledTable, StyledTr, StyledTh, StyledTd } from "../styles/task.styles";
-import TaskCard from "./TaskCard";
+/* eslint-disable react-hooks/exhaustive-deps */
 
-interface TaskType {
-    id: string;
-    name: string;
-    description: string
-    createdAt: { dia: string, mes: string, ano: string } | undefined
-}
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { Button, CircularProgress, Typography } from '@mui/material';
+import { listTasks } from "../store/modules/task/task.slice";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+        border: 0,
+    },
+}));
 
 interface TaskTableProps {
-    tasks: TaskType[]
     editar: (id: string) => void
     deletar: (id: string) => void
+    isEdit?: string
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ tasks, deletar, editar }: TaskTableProps) => {
+const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }) => {
+    const tasksRedux = useAppSelector((state) => state.tasks)
+
+    const [alert, setAlert] = useState('')
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!tasksRedux.data) {
+            return setAlert('Nenhuma tarefa para listar')
+        }
+        dispatch(listTasks())
+    }, []);
 
     return (
-        <StyledTable>
-            <thead>
-                <StyledTr>
-                    <StyledTh align="left"># id</StyledTh>
-                    <StyledTh align="right">Nome</StyledTh>
-                    <StyledTh align="center">Descrição</StyledTh>
-                    <StyledTh align="center">Data de criação</StyledTh>
-                    <StyledTh align="center">Ações</StyledTh>
-                </StyledTr>
-            </thead>
-            <tbody>
-                {Array.isArray(tasks) && tasks.map((item) => (
-                    // <StyledTr key={item.id} >
-                    //     <StyledTd align="left">{item.id}</StyledTd>
-                    //     <StyledTd align="right">{item.name}</StyledTd>
-                    //     <StyledTd align="right">{item.description}</StyledTd>
-                    //     <StyledTd align="center" >
-                    //         <Button sx={{ marginRight: '8px' }} onClick={() => editar(item.id)} color='primary' variant='contained'>Editar
-                    //         </Button>
-                    //         <Button onClick={() => deletar(item.id)} color='error' variant='contained'>Deletar
-                    //         </Button>
-                    //     </StyledTd>
-                    // </StyledTr>
-                    <TaskCard children={
-                        <Grid container>
-                            <Typography variant="body2">{item.id}</Typography>
-                            <Typography variant="body2">{item.name}</Typography>
-                            <Typography variant="body2">{item.description}</Typography>
-                            <Typography variant="body2">{item.createdAt?.dia} - {item.createdAt?.mes} - {item.createdAt?.ano}</Typography>
-                        </Grid>
-                    } />
-                ))}
-            </tbody>
-        </StyledTable>
-    )
+        <>
+            {tasksRedux.loading ?
+                <CircularProgress /> :
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell align="left"># id</StyledTableCell>
+                                <StyledTableCell align="right">Nome</StyledTableCell>
+                                <StyledTableCell align="right">Descrição</StyledTableCell>
+                                <StyledTableCell align="left">Data da Criação</StyledTableCell>
+                                <StyledTableCell align="left">Ações</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {tasksRedux.data ? tasksRedux.data.map((item) => (
+                                <StyledTableRow key={item.id}>
+                                    <StyledTableCell component="th" scope="row">
+                                        {item.id}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="right">{item.name}</StyledTableCell>
+                                    <StyledTableCell align="right">{item.description}</StyledTableCell>
+                                    <StyledTableCell align="right">{item.createdAt?.dia} / {item.createdAt?.mes} / {item.createdAt?.ano}</StyledTableCell>
+                                    <StyledTableCell align="center"><Button variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button></StyledTableCell>
+                                    <StyledTableCell align="center"><Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button></StyledTableCell>
+                                </StyledTableRow>
+                            )) : <Typography>{alert}</Typography>}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            }
+        </>
+    );
 }
+
 
 export default TaskTable
