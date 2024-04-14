@@ -4,23 +4,15 @@ import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../components/Navbar'
-import { Alert, AlertColor, Button, Grid, Snackbar } from '@mui/material'
+import { Alert, AlertColor, Button, Grid, Snackbar, Typography } from '@mui/material'
 import TaskTable from '../components/TaskTable'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { StyleLabel, StyleInput } from '../styles/task.styles'
-import apiService from '../config/services/api.service'
 import { TaskType, createTask } from '../store/modules/task/task.slice'
-
-interface UserLogged {
-    id: string | undefined,
-    email: string,
-    name: string | undefined,
-    token: string | undefined,
-}
 
 const Home: React.FC = () => {
 
-    // const userLoggedRedux = useAppSelector((state) => state.userLogin)
+    const userLoggedRedux = useAppSelector((state) => state.userLogin)
     const tasksRedux = useAppSelector((state) => state.tasks)
     const dispatch = useAppDispatch();
 
@@ -34,8 +26,7 @@ const Home: React.FC = () => {
     const [nameTask, setNameTask] = useState<string>('')
     const [descriptionTask, setDescripitionTask] = useState<string>('')
     const [editMode, setEditmode] = useState<string>('')
-    // const [taskData, setTaskData] = useState<TaskType[]>([])
-    // const [userData, setUserData] = useState<UserLogged>()
+    const [taskData, setTaskData] = useState<TaskType[]>([])
 
     const dataCreated = new Date()
     const day = dataCreated.getDate().toString().padStart(2, '0')
@@ -53,25 +44,20 @@ const Home: React.FC = () => {
         }
     }, [token])
 
-    // useEffect(() => {
-    //     function getLogged() {
-    //         if (userLoggedRedux) {
-    //             setUserData({
-    //                 id: userLoggedRedux.id,
-    //                 name: userLoggedRedux.name,
-    //                 email: userLoggedRedux.email,
-    //                 token: userLoggedRedux?.token
-    //             })
-    //         }
-    //     }
-    //     getLogged()
-    // }, [])
+    const userLoggedTasks = tasksRedux.data.filter((item) => item?.userId === userLoggedRedux.id)
 
+    useEffect(() => {
+        setTaskData(taskData)
+    }, [tasksRedux])
+
+
+    console.log(tasksRedux)
     const addTask = async () => {
         const newTask: TaskType = {
             id: '',
             name: nameTask,
             description: descriptionTask,
+            userId: userLoggedRedux.id,
             createdAt: {
                 dia: `${day}`,
                 mes: `${month}`,
@@ -79,23 +65,14 @@ const Home: React.FC = () => {
             }
         }
 
-        // await apiService.post('/tasks', newTask, {
-        //     headers: {
-        //         Authorization: `Bearer ${userData?.token!}`
-        //     }
-        // }).then(response => {
-        //     setTakData([...tasksRedux.data, response.data.data])
-        //     setAlertMessage(response.data.message)
-        //     setAlertColor("success")
-        //     setOpenAlert(true)
-        // })
-
-        const { payload } = await dispatch(createTask(newTask))
-        if (payload) {
-            setAlertMessage('Tarefa criada com sucesso')
-            setAlertColor('success')
-            setOpenAlert(true)
-        }
+        await dispatch(createTask(newTask)).then(response => {
+            if (response.payload) {
+                setAlertMessage('Tarefa criada com sucesso')
+                setAlertColor('success')
+                setOpenAlert(true)
+            }
+            console.log(response.payload)
+        })
         setAlertMessage('Erro ao criar tarefa')
         setAlertColor('error')
         setOpenAlert(true)
@@ -112,9 +89,9 @@ const Home: React.FC = () => {
                     <StyleInput placeholder='Digite a descrição da tarefa' value={descriptionTask} onChange={(e) => setDescripitionTask(e.target.value)} name='descriptionTask' type='text' />
                     <Button sx={{ marginLeft: '20px' }} onClick={addTask} color={editMode ? 'success' : 'primary'} variant='contained'>{editMode ? 'Salvar' : 'Cadastar'}</Button>
                 </Grid>
-                {tasksRedux.data.length &&
-                    <TaskTable isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />
-                } : <></>
+                {userLoggedTasks.length &&
+                    <TaskTable tasks={userLoggedTasks} isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />
+                } : <Typography>Nenhuma tarefa para listar</Typography>
             </Grid>
             <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1600} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>

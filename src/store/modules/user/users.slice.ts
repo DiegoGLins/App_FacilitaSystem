@@ -24,11 +24,8 @@ export const createUser = createAsyncThunk('/user', async (user: Omit<UserType, 
         const response = await apiService.post('/users', user)
 
         if (response.status === 201) {
-            const { data } = response;
 
-            if (data.ok) {
-                return data.data;
-            }
+            return response.data
         }
         return []
     } catch (error: any) {
@@ -46,7 +43,7 @@ const usersSlice = createSlice({
     initialState,
     reducers: {
         users: (state, action) => {
-            state.data = action.payload
+            state.data.push(action.payload)
             return state
         }
     },

@@ -10,13 +10,15 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LabelDefault from "../components/LabelDefault";
 import ButtonDefault from "../components/ButtonDefault";
-import { createUser } from "../store/modules/user/users.slice"
-import { useAppDispatch } from "../store/hooks"
+import { createUser, users } from "../store/modules/user/users.slice"
+import { useAppDispatch, useAppSelector } from "../store/hooks"
 import cicleUser from '/circle-user.png'
+import { persistor } from "../store"
 
 const Cadastro: React.FC = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
+    const dataUserRedux = useAppSelector((state) => state.users.data)
 
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
@@ -48,7 +50,7 @@ const Cadastro: React.FC = () => {
         setRepeatPassword('')
     }
 
-    const handleCreateUser = async () => {
+    const handleCreateUser = () => {
         if (!name || !email || !password || !repeatPassword) {
             setAlertMessage("Preencha todos os campos")
             setAlertColor("error")
@@ -62,12 +64,25 @@ const Cadastro: React.FC = () => {
             setOpenAlert(true)
             return
         }
+
         const newUser = {
             name, email, password, repeatPassword
         }
 
-        await dispatch(createUser(newUser)).then(response => {
+        const existUser = dataUserRedux.find((item) => item?.email === email)
+        if (existUser) {
+            setAlertMessage("Email já cadastrado")
+            setAlertColor("warning")
+            setOpenAlert(true)
+            return false
+        }
+
+        dispatch(createUser(newUser)).then(response => {
             if (response.payload) {
+
+                persistor.flush().then(() => {
+                    dispatch(users(response.payload.data))
+                })
                 setAlertMessage("Cadastro realizado com sucesso")
                 setAlertColor("success")
                 clear()
@@ -76,6 +91,7 @@ const Cadastro: React.FC = () => {
                     navigate('/')
                 }, 1900)
             }
+            console.log(dataUserRedux)
         }).catch(error => {
             setAlertMessage(`${error.response.message}`)
             setAlertColor("error")

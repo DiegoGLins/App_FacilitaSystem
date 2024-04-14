@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import apiService, { ResponseApiUser } from "../../../config/services/api.service";
-
 export interface UserType {
     id: string;
     name: string;
@@ -10,8 +9,13 @@ export interface UserType {
     loading: boolean
 }
 
-const initialState = {
-    user: {} as UserType
+const initialState: UserType = {
+    id: '',
+    name: '',
+    email: '',
+    password: '',
+    token: '',
+    loading: false
 }
 
 interface UserLogin {
@@ -23,7 +27,7 @@ export const login = createAsyncThunk('/auth/user', async (user: UserLogin): Pro
     const response = await apiService.post('/auth', user)
     if (response.status === 200) {
         localStorage.setItem("token", JSON.stringify(response.data?.token))
-        return response.data.user
+        return response.data
     }
     return {
         ok: response.data?.ok,
@@ -42,15 +46,15 @@ const userLoginSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state) => {
-            state.user.loading = true;
+            state.loading = true;
             return state
         }).addCase(login.fulfilled, (state, action) => {
-            state.user.loading = false;
-            state.user.id = action.payload.data.id,
-                state.user.name = action.payload.data.name,
-                state.user.email = action.payload.data.email,
-                state.user.password = action.payload.data.password
-            state.user.token = action.payload.data.token
+            state.loading = false;
+            state.id = action.payload?.data?.id;
+            state.name = action.payload?.data?.name;
+            state.email = action.payload?.data?.email;
+            state.password = action.payload?.data?.password
+            state.token = action.payload?.data?.token
             return state
         })
     }

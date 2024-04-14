@@ -8,10 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { Button, CircularProgress, Typography } from '@mui/material';
-import { listTasks } from "../store/modules/task/task.slice";
+import { Button } from '@mui/material';
+import { TaskType } from "../store/modules/task/task.slice";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -34,59 +32,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 interface TaskTableProps {
+    tasks: TaskType[]
     editar: (id: string) => void
     deletar: (id: string) => void
     isEdit?: string
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }) => {
-    const tasksRedux = useAppSelector((state) => state.tasks)
-
-    const [alert, setAlert] = useState('')
-
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        if (!tasksRedux.data) {
-            return setAlert('Nenhuma tarefa para listar')
-        }
-        dispatch(listTasks())
-    }, []);
+const TaskTable: React.FC<TaskTableProps> = ({ tasks, editar, deletar }) => {
 
     return (
-        <>
-            {tasksRedux.loading ?
-                <CircularProgress /> :
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell align="left"># id</StyledTableCell>
-                                <StyledTableCell align="right">Nome</StyledTableCell>
-                                <StyledTableCell align="right">Descrição</StyledTableCell>
-                                <StyledTableCell align="left">Data da Criação</StyledTableCell>
-                                <StyledTableCell align="left">Ações</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {tasksRedux.data ? tasksRedux.data.map((item) => (
-                                <StyledTableRow key={item.id}>
-                                    <StyledTableCell component="th" scope="row">
-                                        {item.id}
-                                    </StyledTableCell>
-                                    <StyledTableCell align="right">{item.name}</StyledTableCell>
-                                    <StyledTableCell align="right">{item.description}</StyledTableCell>
-                                    <StyledTableCell align="right">{item.createdAt?.dia} / {item.createdAt?.mes} / {item.createdAt?.ano}</StyledTableCell>
-                                    <StyledTableCell align="center"><Button variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button></StyledTableCell>
-                                    <StyledTableCell align="center"><Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button></StyledTableCell>
-                                </StyledTableRow>
-                            )) : <Typography>{alert}</Typography>}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            }
-        </>
-    );
+        <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                    <TableRow>
+                        <StyledTableCell align="left"># id</StyledTableCell>
+                        <StyledTableCell align="right">Nome</StyledTableCell>
+                        <StyledTableCell align="right">Descrição</StyledTableCell>
+                        <StyledTableCell align="left">Data da Criação</StyledTableCell>
+                        <StyledTableCell align="left">Ações</StyledTableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {tasks.map((item) => (
+                        <StyledTableRow key={item.id}>
+                            <StyledTableCell component="th" scope="row">
+                                {item.id}
+                            </StyledTableCell>
+                            <StyledTableCell align="right">{item.name}</StyledTableCell>
+                            <StyledTableCell align="right">{item.description}</StyledTableCell>
+                            <StyledTableCell align="right">{item.createdAt?.dia} / {item.createdAt?.mes} / {item.createdAt?.ano}</StyledTableCell>
+                            <StyledTableCell align="center"><Button variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button></StyledTableCell>
+                            <StyledTableCell align="center"><Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button></StyledTableCell>
+                        </StyledTableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    )
 }
 
 

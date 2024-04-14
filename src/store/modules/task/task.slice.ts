@@ -7,8 +7,8 @@ export interface TaskType {
     id: string;
     name: string;
     description: string;
-    // userId: string | undefined
     token?: string;
+    userId: string;
     createdAt?: { dia: string, mes: string, ano: string } | undefined
 }
 
@@ -61,40 +61,40 @@ export const createTask = createAsyncThunk('/task', async (task: TaskType, { get
     }
 })
 
-export const listTasks = createAsyncThunk('list/tasks', async (_, { getState }) => {
-    const stateLogged = getState() as { userLogged: UserType | undefined }
-    const user = stateLogged.userLogged
+// export const listTasks = createAsyncThunk('list/tasks', async (_, { getState }) => {
+//     const stateLogged = getState() as { userLogged: UserType | undefined }
+//     const user = stateLogged.userLogged
 
-    try {
-        if (!user?.token) {
-            return {
-                ok: false,
-                code: 500,
-                message: "Erro interno ao listar tarefas"
-            }
-        }
-        const response = await apiService.get(`/tasks/${user.id}`, {
-            headers: {
-                Authorization: `Bearer ${user.token}`
-            }
-        })
-        if (response.status === 200) {
-            return response.data
-        }
-        return {
-            ok: false,
-            code: 404,
-            message: "Erro ao listar tarefas"
-        }
-    }
-    catch (error: any) {
-        return {
-            ok: false,
-            code: 500,
-            message: error.toString()
-        }
-    }
-})
+//     try {
+//         if (!user?.token) {
+//             return {
+//                 ok: false,
+//                 code: 500,
+//                 message: "Erro interno ao listar tarefas"
+//             }
+//         }
+//         const response = await apiService.get(`/tasks/${user.id}`, {
+//             headers: {
+//                 Authorization: `Bearer ${user.token}`
+//             }
+//         })
+//         if (response.status === 200) {
+//             return response.data
+//         }
+//         return {
+//             ok: false,
+//             code: 404,
+//             message: "Erro ao listar tarefas"
+//         }
+//     }
+//     catch (error: any) {
+//         return {
+//             ok: false,
+//             code: 500,
+//             message: error.toString()
+//         }
+//     }
+// })
 
 
 const taskSlice = createSlice({
@@ -121,20 +121,19 @@ const taskSlice = createSlice({
             console.log("Erro ao criar Tarefa:", action.error)
             alert(`${action.error}`)
         });
-        builder.addCase(listTasks.pending, (state) => {
-            state.loading = true
-            return state
-        });
-        builder.addCase(listTasks.fulfilled, (state, action) => {
-            state.loading = false
-            state.data = action.payload || initialState
-            return state
-        })
-        builder.addCase(listTasks.rejected, (_, action) => {
-            console.log(`Erro ao listar tarefas:`, action.error)
-            alert("Erro ao listar tarefas")
-        });
-
+        // builder.addCase(listTasks.pending, (state) => {
+        //     state.loading = true
+        //     return state
+        // });
+        // builder.addCase(listTasks.fulfilled, (state, action) => {
+        //     state.loading = false
+        //     state.data = action.payload || initialState
+        //     return state
+        // })
+        // builder.addCase(listTasks.rejected, (_, action) => {
+        //     console.log(`Erro ao listar tarefas:`, action.error)
+        //     alert("Erro ao listar tarefas")
+        // });
     }
 })
 
