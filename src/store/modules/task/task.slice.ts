@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import apiService from "../../../config/services/api.service";
-import { UserType } from "../user/user.login.slice";
-
+// import { UserType } from "../user/user.login.slice";
 export interface TaskType {
     id: string;
     name: string;
     description: string;
-    token?: string;
     userId: string;
     createdAt?: { dia: string, mes: string, ano: string } | undefined
 }
-
 
 interface TaskState {
     data: TaskType[]
@@ -23,23 +20,21 @@ const initialState: TaskState = {
     loading: false
 }
 
-export const createTask = createAsyncThunk('/task', async (task: TaskType, { getState }) => {
-    const stateLogged = getState() as { userLogged: UserType | undefined }
+export const createTask = createAsyncThunk('/task', async (task: TaskType) => {
+    // const tokenStorage = localStorage.getItem("token")
 
-    const token = stateLogged.userLogged?.token
-
-    if (!token) {
-        return {
-            ok: false,
-            code: 500,
-            message: "Erro ao criar tarefa"
-        }
-    }
+    // if (!tokenStorage) {
+    //     return {
+    //         ok: false,
+    //         code: 500,
+    //         message: "Erro ao criar tarefa"
+    //     }
+    // }
     try {
         const response = await apiService.post('/tasks', task, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            // headers: {
+            //     Authorization: `Bearer ${tokenStorage}`
+            // }
         })
 
         if (response.status === 201) {

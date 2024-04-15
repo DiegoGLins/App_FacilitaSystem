@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../components/Navbar'
-import { Alert, AlertColor, Button, Grid, Snackbar, Typography } from '@mui/material'
+import { Alert, AlertColor, Button, CircularProgress, Grid, Snackbar, Typography } from '@mui/material'
 import TaskTable from '../components/TaskTable'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { StyleLabel, StyleInput } from '../styles/task.styles'
@@ -14,6 +15,7 @@ const Home: React.FC = () => {
 
     const userLoggedRedux = useAppSelector((state) => state.userLogin)
     const tasksRedux = useAppSelector((state) => state.tasks)
+    const userLoggedTasks = tasksRedux.data.filter((item) => item?.userId === userLoggedRedux.id)
     const dispatch = useAppDispatch();
 
     const token = localStorage.getItem("token")
@@ -44,14 +46,16 @@ const Home: React.FC = () => {
         }
     }, [token])
 
-    const userLoggedTasks = tasksRedux.data.filter((item) => item?.userId === userLoggedRedux.id)
 
     useEffect(() => {
-        setTaskData(taskData)
+        setTaskData(userLoggedTasks)
+        console.log(taskData)
+        console.log(tasksRedux)
+        console.log(userLoggedRedux)
+        console.log(userLoggedTasks)
     }, [tasksRedux])
 
 
-    console.log(tasksRedux)
     const addTask = async () => {
         const newTask: TaskType = {
             id: '',
@@ -72,10 +76,11 @@ const Home: React.FC = () => {
                 setOpenAlert(true)
             }
             console.log(response.payload)
+        }).catch(() => {
+            setAlertMessage('Erro ao criar tarefa')
+            setAlertColor('error')
+            setOpenAlert(true)
         })
-        setAlertMessage('Erro ao criar tarefa')
-        setAlertColor('error')
-        setOpenAlert(true)
     }
 
     return (
@@ -89,9 +94,10 @@ const Home: React.FC = () => {
                     <StyleInput placeholder='Digite a descrição da tarefa' value={descriptionTask} onChange={(e) => setDescripitionTask(e.target.value)} name='descriptionTask' type='text' />
                     <Button sx={{ marginLeft: '20px' }} onClick={addTask} color={editMode ? 'success' : 'primary'} variant='contained'>{editMode ? 'Salvar' : 'Cadastar'}</Button>
                 </Grid>
-                {userLoggedTasks.length &&
-                    <TaskTable tasks={userLoggedTasks} isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />
-                } : <Typography>Nenhuma tarefa para listar</Typography>
+                {userLoggedRedux.loading ? (<CircularProgress />) : (
+                    taskData.length > 0 ? (
+                        <TaskTable tasks={userLoggedTasks} isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />) : (
+                        <Typography>Nenhuma tarefa para listar</Typography>))}
             </Grid>
             <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1600} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>

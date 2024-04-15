@@ -38,7 +38,7 @@ interface TaskTableProps {
     isEdit?: string
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ tasks, editar, deletar }) => {
+const TaskTable: React.FC<TaskTableProps> = ({ tasks, editar, deletar }: TaskTableProps) => {
 
     return (
         <TableContainer component={Paper}>
