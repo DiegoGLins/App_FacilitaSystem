@@ -32,9 +32,9 @@ export const createTask = createAsyncThunk('/task', async (task: TaskType) => {
     // }
     try {
         const response = await apiService.post('/tasks', task, {
-            // headers: {
-            //     Authorization: `Bearer ${tokenStorage}`
-            // }
+            headers: {
+            Authorization: `Bearer ${tokenStorage}`
+            }
         })
 
         if (response.status === 201) {
