@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import apiService from "../../../config/services/api.service";
-// import { UserType } from "../user/user.login.slice";
 export interface TaskType {
     id: string;
     name: string;
@@ -20,29 +19,31 @@ const initialState: TaskState = {
     loading: false
 }
 
-export const createTask = createAsyncThunk('/task', async (task: TaskType) => {
-    // const tokenStorage = localStorage.getItem("token")
+export const createTask = createAsyncThunk('/tasks', async (task: TaskType) => {
+    const tokenStorage = localStorage.getItem("token")
 
-    // if (!tokenStorage) {
-    //     return {
-    //         ok: false,
-    //         code: 500,
-    //         message: "Erro ao criar tarefa"
-    //     }
-    // }
+    if (!tokenStorage) {
+        return {
+            ok: false,
+            code: 500,
+            message: "Erro ao criar tarefa"
+        }
+    }
     try {
         const response = await apiService.post('/tasks', task, {
             headers: {
-            Authorization: `Bearer ${tokenStorage}`
+                Authorization: `Bearer ${tokenStorage}`
             }
         })
 
         if (response.status === 201) {
+            const { data } = response
+
             return {
                 ok: response.data?.ok,
                 code: response.data?.code,
                 message: response.data?.message,
-                data: response.data?.data
+                data: data
             }
         }
     }
@@ -56,40 +57,40 @@ export const createTask = createAsyncThunk('/task', async (task: TaskType) => {
     }
 })
 
-// export const listTasks = createAsyncThunk('list/tasks', async (_, { getState }) => {
-//     const stateLogged = getState() as { userLogged: UserType | undefined }
-//     const user = stateLogged.userLogged
+export const listTasks = createAsyncThunk('/tasks', async () => {
+    const tokenStorage = localStorage.getItem("token")
 
-//     try {
-//         if (!user?.token) {
-//             return {
-//                 ok: false,
-//                 code: 500,
-//                 message: "Erro interno ao listar tarefas"
-//             }
-//         }
-//         const response = await apiService.get(`/tasks/${user.id}`, {
-//             headers: {
-//                 Authorization: `Bearer ${user.token}`
-//             }
-//         })
-//         if (response.status === 200) {
-//             return response.data
-//         }
-//         return {
-//             ok: false,
-//             code: 404,
-//             message: "Erro ao listar tarefas"
-//         }
-//     }
-//     catch (error: any) {
-//         return {
-//             ok: false,
-//             code: 500,
-//             message: error.toString()
-//         }
-//     }
-// })
+    try {
+        if (!tokenStorage) {
+            return {
+                ok: false,
+                code: 500,
+                message: "Erro interno ao listar tarefas: Dentro do primeiro if do try"
+            }
+        }
+        const response = await apiService.get('/tasks', {
+            headers: {
+                Authorization: `Bearer ${tokenStorage}`
+            }
+        })
+        if (response.status === 200) {
+            return response.data
+        }
+        return {
+            ok: false,
+            code: 404,
+            message: "Erro ao listar tarefas"
+        }
+    }
+    catch (error: any) {
+        console.log(error)
+        return {
+            ok: false,
+            code: error.response,
+            message: error.toString()
+        }
+    }
+})
 
 
 const taskSlice = createSlice({
@@ -116,19 +117,19 @@ const taskSlice = createSlice({
             console.log("Erro ao criar Tarefa:", action.error)
             alert(`${action.error}`)
         });
-        // builder.addCase(listTasks.pending, (state) => {
-        //     state.loading = true
-        //     return state
-        // });
-        // builder.addCase(listTasks.fulfilled, (state, action) => {
-        //     state.loading = false
-        //     state.data = action.payload || initialState
-        //     return state
-        // })
-        // builder.addCase(listTasks.rejected, (_, action) => {
-        //     console.log(`Erro ao listar tarefas:`, action.error)
-        //     alert("Erro ao listar tarefas")
-        // });
+        builder.addCase(listTasks.pending, (state) => {
+            state.loading = true
+            return state
+        });
+        builder.addCase(listTasks.fulfilled, (state, action) => {
+            state.loading = false
+            state.data = action.payload || initialState
+            return state
+        })
+        builder.addCase(listTasks.rejected, (_, action) => {
+            console.log(`Erro ao listar tarefas:`, action.error)
+            alert("Erro ao listar tarefas")
+        });
     }
 })
 

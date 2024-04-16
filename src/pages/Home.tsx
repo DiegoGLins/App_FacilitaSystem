@@ -9,13 +9,13 @@ import { Alert, AlertColor, Button, CircularProgress, Grid, Snackbar, Typography
 import TaskTable from '../components/TaskTable'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { StyleLabel, StyleInput } from '../styles/task.styles'
-import { TaskType, createTask } from '../store/modules/task/task.slice'
+import { TaskType, createTask, listTasks } from '../store/modules/task/task.slice'
 
 const Home: React.FC = () => {
 
     const userLoggedRedux = useAppSelector((state) => state.userLogin)
     const tasksRedux = useAppSelector((state) => state.tasks)
-    const userLoggedTasks = tasksRedux.data.filter((item) => item?.userId === userLoggedRedux.id)
+    const userLoggedTasks = tasksRedux.data
     const dispatch = useAppDispatch();
 
     const token = localStorage.getItem("token")
@@ -47,13 +47,27 @@ const Home: React.FC = () => {
     }, [token])
 
 
+    const getTaks = async () => {
+        await dispatch(listTasks()).then(response => {
+            console.log(response)
+            if (response.payload) {
+                setTaskData(response.payload)
+                setAlertMessage(`${response.payload.message}`)
+                setAlertColor("success")
+                setOpenAlert(true)
+            }
+        })
+    }
+
     useEffect(() => {
-        setTaskData(userLoggedTasks)
-        console.log(taskData)
-        console.log(tasksRedux)
+        // setTaskData(userLoggedTasks!)
+
+        getTaks()
+        console.log(taskData)//[]
+        console.log(tasksRedux)//status 500 - Erro ao listar tarefas
         console.log(userLoggedRedux)
         console.log(userLoggedTasks)
-    }, [tasksRedux])
+    }, [])
 
 
     const addTask = async () => {
@@ -94,10 +108,10 @@ const Home: React.FC = () => {
                     <StyleInput placeholder='Digite a descrição da tarefa' value={descriptionTask} onChange={(e) => setDescripitionTask(e.target.value)} name='descriptionTask' type='text' />
                     <Button sx={{ marginLeft: '20px' }} onClick={addTask} color={editMode ? 'success' : 'primary'} variant='contained'>{editMode ? 'Salvar' : 'Cadastar'}</Button>
                 </Grid>
-                {userLoggedRedux.loading ? (<CircularProgress />) : (
+                {/* {userLoggedRedux.loading ? (<CircularProgress />) : (
                     taskData.length > 0 ? (
-                        <TaskTable tasks={userLoggedTasks} isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />) : (
-                        <Typography>Nenhuma tarefa para listar</Typography>))}
+                        <TaskTable tasks={taskData} isEdit={editMode} editar={() => console.log()} deletar={() => console.log()} />) : (
+                        <Typography>Nenhuma tarefa para listar</Typography>))} */}
             </Grid>
             <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1600} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>

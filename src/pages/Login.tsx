@@ -9,13 +9,14 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LabelDefault from "../components/LabelDefault";
 import ButtonDefault from "../components/ButtonDefault";
-import { useAppDispatch } from "../store/hooks"
+import { useAppDispatch, useAppSelector } from "../store/hooks"
 import { login } from "../store/modules/user/user.login.slice"
 
 const Login = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
+    const dataUserRedux = useAppSelector((state) => state.users.data)
     const [showPassword, setShowPassword] = useState(false);
 
     const [email, setEmail] = useState<string>('')
@@ -45,21 +46,21 @@ const Login = () => {
             return
         }
 
-        // const existUserEmail = dataUserRedux.find((item) => item?.email === email)
+        const existUserEmail = dataUserRedux.find((item) => item?.email === email)
 
-        // if (!existUserEmail) {
-        //     setAlertMessage("Usuário não encontrado")
-        //     setAlertColor("error")
-        //     setOpenAlert(true)
-        //     console.log(dataUserRedux)
-        // }
+        if (!existUserEmail) {
+            setAlertMessage("Usuário não encontrado")
+            setAlertColor("error")
+            setOpenAlert(true)
+            console.log(dataUserRedux)
+        }
 
-        // if (existUserEmail?.email) {
-        //     setAlertMessage("Email ou senha incorretos")
-        //     setAlertColor("error")
-        //     setOpenAlert(true)
-        //     console.log(dataUserRedux)
-        // }
+        if (existUserEmail?.email) {
+            setAlertMessage("Email ou senha incorretos")
+            setAlertColor("error")
+            setOpenAlert(true)
+            console.log(dataUserRedux)
+        }
 
         else {
             const userLogged = {
