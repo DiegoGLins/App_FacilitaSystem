@@ -43,6 +43,7 @@ const Home: React.FC = () => {
     const clear = () => {
         setNameTask('')
         setDescriptionTask('')
+        setEditMode('')
     }
 
     const addTask = async () => {
@@ -100,18 +101,21 @@ const Home: React.FC = () => {
     }
 
     const removeTask = (id: string) => {
-        dispatch(deleteTask(id))
+        const updatedTasks = tasksRedux.filter(task => task.id !== id);
+        dispatch({ type: 'tasks/delete', payload: updatedTasks })
+        dispatch(deleteTask(id));
         dispatch(listTasks())
         setAlertMessage("Tarefa excluída com sucesso")
         setAlertColor("success")
         setOpenAlert(true)
     }
 
+
     return (
         <>
             <NavBar />
             <Grid container sx={{ justifyContent: 'center', marginTop: '30px', alignItems: 'center', flexDirection: 'column' }}>
-                <Grid item sx={{ marginBottom: '20px', justifyContent: 'center', alignItems: 'center' }}>
+                <Grid item sx={{ marginBottom: '20px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', display: 'flex' }}>
                     <StyleLabel htmlFor='name'>Nome da tarefa</StyleLabel>
                     <StyleInput placeholder='Digite o nome da tarefa' value={nameTask} onChange={(e) => setNameTask(e.target.value)} name='nameTask' type='text' />
                     <StyleLabel htmlFor='description'>Descrição da tarefa</StyleLabel>
@@ -122,7 +126,7 @@ const Home: React.FC = () => {
                     <TaskTable isEdit={editMode} editar={edit} deletar={removeTask} />
                 </Grid>
             </Grid>
-            <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1600} onClose={() => setOpenAlert(false)}>
+            <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1100} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>
                     {alertMessage}
                 </Alert>
