@@ -180,10 +180,11 @@ const taskSlice = createSlice({
         });
         builder.addCase(deleteTask.fulfilled, (state, action: PayloadAction<TaskType>) => {
             state.loading = false;
-            const findTask = state.data.find((item) => item.id === action.payload.id);
-            const indexTask = state.data.findIndex((item) => item.id === findTask?.id)
-            state.data.splice(indexTask, 1)
-            return state
+            const findIndex = state.data.findIndex((item) => item.id === action.payload.id)
+            if (findIndex !== -1) {
+                state.data.splice(findIndex, 1)
+                return state
+            }
         });
         builder.addCase(deleteTask.rejected, (state, action) => {
             state.loading = false

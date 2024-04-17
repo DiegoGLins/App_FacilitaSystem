@@ -101,15 +101,15 @@ const Home: React.FC = () => {
     }
 
     const removeTask = (id: string) => {
+        dispatch(deleteTask(id));
+        dispatch(listTasks())
         const updatedTasks = tasksRedux.filter(task => task.id !== id);
         dispatch({ type: 'tasks/delete', payload: updatedTasks })
-        dispatch(deleteTask(id));
         dispatch(listTasks())
         setAlertMessage("Tarefa excluída com sucesso")
         setAlertColor("success")
         setOpenAlert(true)
     }
-
 
     return (
         <>
