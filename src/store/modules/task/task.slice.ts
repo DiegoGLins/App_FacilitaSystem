@@ -7,14 +7,10 @@ export interface TaskType {
     description: string;
     userId: string;
     createdAt: Date;
-    code: number
 }
 
-export type TaskCreate = Omit<TaskType, 'id' | 'code' | 'createdAt'>
-export type TaskUpdate = Omit<TaskType, 'userId' | 'code' | 'createdAt'>
-export type TaskDelete = {
-    idTask: string
-}
+export type TaskCreate = Omit<TaskType, 'id' | 'createdAt'>
+export type TaskUpdate = Omit<TaskType, 'userId' | 'createdAt'>
 
 interface TaskState {
     data: TaskType[]
@@ -182,15 +178,12 @@ const taskSlice = createSlice({
                 state.data = action.payload
             }
         });
-        builder.addCase(deleteTask.fulfilled, (state, action: PayloadAction<TaskDelete>) => {
+        builder.addCase(deleteTask.fulfilled, (state, action: PayloadAction<TaskType>) => {
             state.loading = false;
-            const findTask = action.payload
-            const data = state.data.find(item => item.id === findTask.idTask)
-            if (data?.id) {
-                const index = state.data.findIndex((task) => task.id === action.payload.idTask)
-                state.data.splice(index, 1)
-                return state
-            }
+            const findTask = state.data.find((item) => item.id === action.payload.id);
+            const indexTask = state.data.findIndex((item) => item.id === findTask?.id)
+            state.data.splice(indexTask, 1)
+            return state
         });
         builder.addCase(deleteTask.rejected, (state, action) => {
             state.loading = false
