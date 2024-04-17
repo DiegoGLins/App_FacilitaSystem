@@ -11,7 +11,7 @@ interface UserType {
 
 interface UserState {
     data: UserType[]
-    loading: boolean
+    loading?: boolean
 }
 
 const initialState: UserState = {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { TaskType } from "../../store/modules/task/task.slice";
 
 const apiService = axios.create({
-    baseURL: 'https://api-facilitasystem.onrender.com'
+    baseURL: import.meta.env.VITE_API_URL
 })
 
 export default apiService

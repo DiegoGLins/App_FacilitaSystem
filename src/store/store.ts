@@ -7,7 +7,7 @@ const persistConfig = {
     key: 'task daily',
     version: 1,
     storage,
-    whitelist: ['tasks', 'users', 'userLogin']
+    whitelist: []
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

@@ -6,7 +6,7 @@ export interface UserType {
     email: string
     password: string
     token?: string
-    loading: boolean
+    loading?: boolean
 }
 
 const initialState: UserType = {

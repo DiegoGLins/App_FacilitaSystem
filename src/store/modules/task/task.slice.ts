@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import apiService from "../../../config/services/api.service";
 export interface TaskType {
     id: string;
     name: string;
     description: string;
     userId: string;
-    createdAt?: { dia: string, mes: string, ano: string } | undefined
+    createdAt: Date;
+    code: number
+}
+
+export type TaskCreate = Omit<TaskType, 'id' | 'code' | 'createdAt'>
+export type TaskUpdate = Omit<TaskType, 'userId' | 'code' | 'createdAt'>
+export type TaskDelete = {
+    idTask: string
 }
 
 interface TaskState {
@@ -19,16 +26,9 @@ const initialState: TaskState = {
     loading: false
 }
 
-export const createTask = createAsyncThunk('/tasks', async (task: TaskType) => {
-    const tokenStorage = localStorage.getItem("token")
+export const createTask = createAsyncThunk('create/tasks', async (task: TaskCreate) => {
+    const tokenStorage = JSON.parse(localStorage.getItem("token") || '')
 
-    if (!tokenStorage) {
-        return {
-            ok: false,
-            code: 500,
-            message: "Erro ao criar tarefa"
-        }
-    }
     try {
         const response = await apiService.post('/tasks', task, {
             headers: {
@@ -36,16 +36,8 @@ export const createTask = createAsyncThunk('/tasks', async (task: TaskType) => {
             }
         })
 
-        if (response.status === 201) {
-            const { data } = response
+        return response.data
 
-            return {
-                ok: response.data?.ok,
-                code: response.data?.code,
-                message: response.data?.message,
-                data: data
-            }
-        }
     }
     catch (error: any) {
         return {
@@ -57,33 +49,59 @@ export const createTask = createAsyncThunk('/tasks', async (task: TaskType) => {
     }
 })
 
-export const listTasks = createAsyncThunk('/tasks', async () => {
-    const tokenStorage = localStorage.getItem("token")
+export const listTasks = createAsyncThunk('list/tasks', async () => {
+    const tokenStorage = JSON.parse(localStorage.getItem("token") || '')
 
     try {
-        if (!tokenStorage) {
-            return {
-                ok: false,
-                code: 500,
-                message: "Erro interno ao listar tarefas: Dentro do primeiro if do try"
-            }
-        }
         const response = await apiService.get('/tasks', {
             headers: {
                 Authorization: `Bearer ${tokenStorage}`
             }
         })
-        if (response.status === 200) {
-            return response.data
-        }
-        return {
-            ok: false,
-            code: 404,
-            message: "Erro ao listar tarefas"
-        }
+        return response.data
     }
     catch (error: any) {
         console.log(error)
+        return {
+            ok: false,
+            code: error.response,
+            message: error.toString()
+        }
+    }
+})
+
+export const editTask = createAsyncThunk('edit/tasks', async (data: TaskUpdate) => {
+    const tokenStorage = JSON.parse(localStorage.getItem("token") || '')
+
+    try {
+        const response = await apiService.put(`/tasks/${data.id}`, data, {
+            headers: {
+                Authorization: `Bearer ${tokenStorage}`
+            }
+        })
+        return response.data
+
+    } catch (error: any) {
+        return {
+            ok: false,
+            code: error.response,
+            message: error.toString()
+        }
+    }
+})
+
+export const deleteTask = createAsyncThunk('delete/tasks', async (idTask: string) => {
+    const tokenStorage = JSON.parse(localStorage.getItem("token") || '')
+
+    try {
+        const response = await apiService.delete(`/tasks/${idTask}`, {
+            headers: {
+                Authorization: `Bearer ${tokenStorage}`
+            }
+        })
+        return response.data
+
+    } catch (error: any) {
         return {
             ok: false,
             code: error.response,
@@ -97,9 +115,8 @@ const taskSlice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
-        tasks: (state, action) => {
-            state.data = action.payload
-            return state
+        clear: () => {
+            return initialState;
         }
     },
     extraReducers: (builder) => {
@@ -110,12 +127,16 @@ const taskSlice = createSlice({
         builder.addCase(createTask.fulfilled, (state, action) => {
             console.log("Resposta da Api:", action.payload)
             state.loading = false
-            state.data.push(action.payload?.data)
+            if (action.payload.ok) {
+                state.data.push(action.payload?.data)
+            }
             return state
         });
-        builder.addCase(createTask.rejected, (_, action) => {
+        builder.addCase(createTask.rejected, (state, action) => {
+            state.loading = false
             console.log("Erro ao criar Tarefa:", action.error)
             alert(`${action.error}`)
+            return state
         });
         builder.addCase(listTasks.pending, (state) => {
             state.loading = true
@@ -123,15 +144,62 @@ const taskSlice = createSlice({
         });
         builder.addCase(listTasks.fulfilled, (state, action) => {
             state.loading = false
-            state.data = action.payload || initialState
+            if (action.payload.ok) {
+                state.data = action.payload.data
+            }
             return state
         })
-        builder.addCase(listTasks.rejected, (_, action) => {
+        builder.addCase(listTasks.rejected, (state, action) => {
+            state.loading = false
             console.log(`Erro ao listar tarefas:`, action.error)
             alert("Erro ao listar tarefas")
+            return state
         });
+        builder.addCase(editTask.pending, (state) => {
+            state.loading = true
+            return state
+        });
+        builder.addCase(editTask.fulfilled, (state, action: PayloadAction<TaskUpdate>) => {
+            state.loading = false
+            const findTask = action.payload
+            const indexTask = state.data.findIndex((item => item.id === findTask.id))
+            if (indexTask >= 0) {
+                state.data[indexTask].name = action.payload.name
+                state.data[indexTask].description = action.payload.description
+                state.data[indexTask].id = action.payload.id
+            }
+            return state
+        });
+        builder.addCase(editTask.rejected, (state, action) => {
+            state.loading = false
+            console.log(`Erro ao editar tarefa:`, action.error)
+            alert("Erro ao editar tarefa")
+            return state
+        });
+        builder.addCase(deleteTask.pending, (state, action) => {
+            state.loading = true
+            if (action.payload) {
+                state.data = action.payload
+            }
+        });
+        builder.addCase(deleteTask.fulfilled, (state, action: PayloadAction<TaskDelete>) => {
+            state.loading = false;
+            const findTask = action.payload
+            const data = state.data.find(item => item.id === findTask.idTask)
+            if (data?.id) {
+                const index = state.data.findIndex((task) => task.id === action.payload.idTask)
+                state.data.splice(index, 1)
+                return state
+            }
+        });
+        builder.addCase(deleteTask.rejected, (state, action) => {
+            state.loading = false
+            console.log(`Erro ao editar tarefa:`, action.error)
+            alert("Erro ao editar tarefa")
+            return state
+        })
     }
 })
 
-export const { tasks } = taskSlice.actions
+export const { clear } = taskSlice.actions
 export default taskSlice.reducer

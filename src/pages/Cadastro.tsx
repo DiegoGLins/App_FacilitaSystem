@@ -79,7 +79,6 @@ const Cadastro: React.FC = () => {
 
         dispatch(createUser(newUser)).then(response => {
             if (response.payload) {
-
                 persistor.flush().then(() => {
                     dispatch(users(response.payload.data))
                 })

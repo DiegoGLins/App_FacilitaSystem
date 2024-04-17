@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Alert, AlertColor, Grid, Snackbar, Typography } from "@mui/material"
 import backgroundCadastro from '/background-cadastro.png'
-import { useState } from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import '../App.css'
 import InputDefault from "../components/InputDefault"
@@ -9,14 +10,12 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LabelDefault from "../components/LabelDefault";
 import ButtonDefault from "../components/ButtonDefault";
-import { useAppDispatch, useAppSelector } from "../store/hooks"
+import { useAppDispatch } from "../store/hooks"
 import { login } from "../store/modules/user/user.login.slice"
 
-const Login = () => {
+const Login: React.FC = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-
-    const dataUserRedux = useAppSelector((state) => state.users.data)
     const [showPassword, setShowPassword] = useState(false);
 
     const [email, setEmail] = useState<string>('')
@@ -46,22 +45,6 @@ const Login = () => {
             return
         }
 
-        const existUserEmail = dataUserRedux.find((item) => item?.email === email)
-
-        if (!existUserEmail) {
-            setAlertMessage("Usuário não encontrado")
-            setAlertColor("error")
-            setOpenAlert(true)
-            console.log(dataUserRedux)
-        }
-
-        if (existUserEmail?.email) {
-            setAlertMessage("Email ou senha incorretos")
-            setAlertColor("error")
-            setOpenAlert(true)
-            console.log(dataUserRedux)
-        }
-
         else {
             const userLogged = {
                 email, password
@@ -70,8 +53,8 @@ const Login = () => {
                 if (response.payload) {
                     setAlertMessage(`${response.payload}`)
                     setAlertColor("success")
-                    clear()
                     setOpenAlert(true)
+                    clear()
                     navigate('/home')
                 }
             })
