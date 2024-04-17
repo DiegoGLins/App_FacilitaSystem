@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import apiService from "../../../config/services/api.service";
 
 interface UserType {
-    id?: string;
+    id: string;
     name: string;
     email: string;
     password: string

@@ -44,7 +44,6 @@ const Login: React.FC = () => {
             setOpenAlert(true)
             return
         }
-
         else {
             const userLogged = {
                 email, password
@@ -57,6 +56,10 @@ const Login: React.FC = () => {
                     clear()
                     navigate('/home')
                 }
+            }).finally(() => {
+                setAlertMessage("Email ou senha incorretos")
+                setAlertColor("warning")
+                setOpenAlert(true)
             })
         }
     }

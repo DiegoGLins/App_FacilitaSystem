@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { StyleLabel, StyleInput } from '../styles/task.styles'
 import { TaskCreate, TaskUpdate, createTask, deleteTask, editTask, listTasks } from '../store/modules/task/task.slice'
 
-
 const Home: React.FC = () => {
     const dispatch = useAppDispatch();
 
@@ -56,6 +55,7 @@ const Home: React.FC = () => {
         await dispatch(createTask(newTask)).then(response => {
             if (response.payload) {
                 clear()
+                dispatch(listTasks())
                 setAlertMessage('Tarefa criada com sucesso')
                 setAlertColor('success')
                 setOpenAlert(true)
