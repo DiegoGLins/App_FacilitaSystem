@@ -6,7 +6,7 @@ export interface TaskType {
     name: string;
     description: string;
     userId: string;
-    createdAt: Date;
+    createdAt: Date
 }
 
 export type TaskCreate = Omit<TaskType, 'id' | 'createdAt'>
