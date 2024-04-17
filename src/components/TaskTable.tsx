@@ -63,10 +63,10 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }: TaskTableProps
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {tasksRedux.data.length ? tasksRedux.data.map((item) => (
+                            {tasksRedux.data.length ? tasksRedux.data.map((item, index) => (
                                 <StyledTableRow key={item.id}>
                                     <StyledTableCell component="th" scope="row">
-                                        {item.code}
+                                        {index + 1}
                                     </StyledTableCell>
                                     <StyledTableCell align="left">{item.name}</StyledTableCell>
                                     <StyledTableCell align="left">{item.description}</StyledTableCell>
