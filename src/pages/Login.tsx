@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Alert, AlertColor, Grid, Snackbar, Typography } from "@mui/material"
+import { Alert, AlertColor, CircularProgress, Grid, Snackbar, Typography } from "@mui/material"
 import backgroundCadastro from '/background-cadastro.png'
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import '../App.css'
 import InputDefault from "../components/InputDefault"
@@ -23,6 +23,14 @@ const Login: React.FC = () => {
     const [alertMessage, setAlertMessage] = useState<string>()
     const [openAlert, setOpenAlert] = useState<boolean>(false)
     const [alertColor, setAlertColor] = useState<AlertColor>('error' || 'info' || 'success' || 'warning')
+    const [validate, setValidate] = useState(true)
+    const [laoding, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (email.length && password.length) {
+            setValidate(false)
+        }
+    }, [email, password])
 
     const clear = () => {
         setEmail('')
@@ -48,8 +56,11 @@ const Login: React.FC = () => {
             const userLogged = {
                 email, password
             }
+            setLoading(true)
+            setValidate(true)
             await dispatch(login(userLogged)).then(response => {
                 if (response.payload) {
+                    setLoading(true)
                     setAlertMessage(`${response.payload}`)
                     setAlertColor("success")
                     setOpenAlert(true)
@@ -83,7 +94,7 @@ const Login: React.FC = () => {
                             <InputDefault require action={(e) => setEmail(e.target.value)} value={email} label={"Insira seu email"} color={"secondary"} type={"email"} icon={<MailOutlineIcon style={{ width: '24x', height: '25px', padding: '0px 10px 10px 0px', color: '#757575' }} />} />
                             <LabelDefault label='Senha' />
                             <InputDefault require action={(e) => setPassword(e.target.value)} value={password} color="secondary" label="Insira sua senha" type={showPassword ? 'text' : 'password'} icon={<span onClick={passwordVisibility}>{showPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
-                            <ButtonDefault type='button' action={handleLogin} label='Entrar' styleWidth={150} styleHeight={50} />
+                            <ButtonDefault type='button' action={handleLogin} customStyle={validate ? 'disabledButton' : 'styleButton'} disable={validate ? true : false} label={laoding ? <CircularProgress color="secondary" /> : "Entrar"} styleWidth={150} styleHeight={60} />
                             <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
                                 <Typography variant="body1">Não tem cadastro ? <button onClick={() => navUrl('/cadastro')} className="link">Cadastrar</button></Typography>
                             </Grid>

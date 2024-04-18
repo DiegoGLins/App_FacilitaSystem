@@ -120,7 +120,7 @@ const Cadastro: React.FC = () => {
                             <InputDefault id='password' require value={password} action={(e) => setPassword(e.target.value)} color="secondary" label="Insira sua senha" type={showPassword ? 'text' : 'password'} icon={<span onClick={passwordVisibility}>{showPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
                             <LabelDefault label='Confirme senha' />
                             <InputDefault id='repeatPassword' require value={repeatPassword} action={(e) => setRepeatPassword(e.target.value)} color="secondary" label="Repita a senha criada" type={showRepeatPassword ? 'text' : 'password'} icon={<span onClick={passwordRepeatVisibility}>{showRepeatPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
-                            <ButtonDefault type='button' label='Cadastrar' action={handleCreateUser} styleWidth={150} styleHeight={50} />
+                            <ButtonDefault type='button' label='Cadastrar' action={handleCreateUser} styleWidth={150} styleHeight={60} />
                             <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
                                 <Typography variant="body1">Já tem cadastro ? <button onClick={() => navUrl('/')} className="link">Fazer login</button></Typography>
                             </Grid>
