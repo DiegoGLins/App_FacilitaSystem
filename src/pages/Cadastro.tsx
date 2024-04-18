@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Alert, AlertColor, Grid, Snackbar, Typography } from "@mui/material"
+import { Alert, AlertColor, CircularProgress, Grid, Snackbar, Typography } from "@mui/material"
 import backgroundCadastro from '/background-cadastro.png'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import '../App.css'
 import InputDefault from "../components/InputDefault"
@@ -22,6 +22,8 @@ const Cadastro: React.FC = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+    const [validate, setValidate] = useState(true)
+    const [laoding, setLoading] = useState(false)
 
     const [alertMessage, setAlertMessage] = useState<string>()
     const [openAlert, setOpenAlert] = useState<boolean>(false)
@@ -50,6 +52,12 @@ const Cadastro: React.FC = () => {
         setRepeatPassword('')
     }
 
+    useEffect(() => {
+        if (name && email.length && password.length && repeatPassword) {
+            setValidate(false)
+        }
+    }, [email, name, password, repeatPassword])
+
     const handleCreateUser = () => {
         if (!name || !email || !password || !repeatPassword) {
             setAlertMessage("Preencha todos os campos")
@@ -77,8 +85,11 @@ const Cadastro: React.FC = () => {
             return false
         }
 
+        setLoading(true)
+        setValidate(true)
         dispatch(createUser(newUser)).then(response => {
             if (response.payload) {
+                setLoading(true)
                 persistor.flush().then(() => {
                     dispatch(users(response.payload.data))
                 })
@@ -120,7 +131,7 @@ const Cadastro: React.FC = () => {
                             <InputDefault id='password' require value={password} action={(e) => setPassword(e.target.value)} color="secondary" label="Insira sua senha" type={showPassword ? 'text' : 'password'} icon={<span onClick={passwordVisibility}>{showPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
                             <LabelDefault label='Confirme senha' />
                             <InputDefault id='repeatPassword' require value={repeatPassword} action={(e) => setRepeatPassword(e.target.value)} color="secondary" label="Repita a senha criada" type={showRepeatPassword ? 'text' : 'password'} icon={<span onClick={passwordRepeatVisibility}>{showRepeatPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
-                            <ButtonDefault type='button' label='Cadastrar' action={handleCreateUser} styleWidth={150} styleHeight={60} />
+                            <ButtonDefault type='button' action={handleCreateUser} styleWidth={150} styleHeight={60} customStyle={validate ? 'disabledButton' : 'styleButton'} disable={validate ? true : false} label={laoding ? <CircularProgress color="secondary" /> : "Cadastrar"} />
                             <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
                                 <Typography variant="body1">Já tem cadastro ? <button onClick={() => navUrl('/')} className="link">Fazer login</button></Typography>
                             </Grid>

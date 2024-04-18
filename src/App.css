@@ -74,5 +74,6 @@ body {
   background-color: #746f6f;
   opacity: 0.4;
   border: none;
-  color: #fff
+  color: #fff;
+  font-size: large;
 }
