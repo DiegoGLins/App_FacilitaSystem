@@ -41,13 +41,12 @@ interface TaskTableProps {
     isEdit?: string
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }: TaskTableProps) => {
+const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar, }: TaskTableProps) => {
     const dispatch = useAppDispatch();
     const tasksRedux = useAppSelector((state) => state.tasks)
 
     useEffect(() => {
         dispatch(listTasks())
-        console.log(tasksRedux.data)
     }, [])
 
 
