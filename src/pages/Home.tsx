@@ -55,7 +55,6 @@ const Home: React.FC = () => {
         await dispatch(createTask(newTask)).then(response => {
             if (response.payload) {
                 clear()
-                dispatch(listTasks())
                 setAlertMessage('Tarefa criada com sucesso')
                 setAlertColor('success')
                 setOpenAlert(true)
