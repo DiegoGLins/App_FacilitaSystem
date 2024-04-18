@@ -2,4 +2,4 @@ Este repositório é uma aplicação para gerenciamento de tarefas, onde o usuá
 
 O app pode ser acesso através do link: 
 
-https://vercel.com/diegoglins-projects/app-facilita-system/AJ4KrUtb4oaLiDEBcKJ6PRwZtCTR
+https://app-facilita-system-iskl91ynb-diegoglins-projects.vercel.app/
