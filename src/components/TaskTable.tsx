@@ -13,6 +13,7 @@ import { Button, CircularProgress, Typography } from '@mui/material';
 import { listTasks } from "../store/modules/task/task.slice";
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { format } from 'date-fns'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -46,6 +47,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }: TaskTableProps
 
     useEffect(() => {
         dispatch(listTasks())
+        console.log(tasksRedux.data)
     }, [])
 
 
@@ -71,7 +73,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar }: TaskTableProps
                                     </StyledTableCell>
                                     <StyledTableCell align="left">{item.name}</StyledTableCell>
                                     <StyledTableCell align="left">{item.description}</StyledTableCell>
-                                    <StyledTableCell align="left">{item.createdAt}</StyledTableCell>
+                                    <StyledTableCell align="left">{format(item.createdAt, 'dd/MM/yyyy')}</StyledTableCell>
                                     <StyledTableCell align="center">
                                         <Button sx={{ marginRight: '10px' }} variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button>
                                         <Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button>
