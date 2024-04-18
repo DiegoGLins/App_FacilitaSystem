@@ -1,30 +1,12 @@
-# React + TypeScript + Vite
+Este repositório é uma aplicação para gerenciamento de tarefas, onde o usuário após fazer login pode criar, editar , excluir e listar suas tarefas diárias
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O app pode ser acesso através do link: 
+https://app-facilita-system-iskl91ynb-diegoglins-projects.vercel.app/
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+</br>
+<div align='center' style={display: 'flex', alignItems='center'}>
+  <p float='center'>
+    <img src="https://github.com/DiegoGLins/App_FacilitaSystem/assets/107010634/0f15b5f5-e165-4a36-9c70-4c401b156f42" width="40%">
+    <img src="https://github.com/DiegoGLins/App_FacilitaSystem/assets/107010634/2183124b-0828-4056-b8e5-a1cedcf8e68a" width="40%" heigth='30%'> 
+  </p>
+</div>
