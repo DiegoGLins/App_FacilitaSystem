@@ -6,7 +6,7 @@ export interface TaskType {
     name: string;
     description: string;
     userId: string;
-    createdAt: string
+    createdAt: Date
 }
 
 export type TaskCreate = Omit<TaskType, 'id' | 'createdAt'>
@@ -57,11 +57,11 @@ export const listTasks = createAsyncThunk('list/tasks', async () => {
         return response.data
     }
     catch (error: any) {
-        console.log(error)
         return {
-            ok: false,
-            code: error.response,
-            message: error.toString()
+            ok: error.response.data?.ok,
+            code: error.response.data?.code,
+            message: error.response.data?.message,
+            data: error.response.data?.data
         }
     }
 })
