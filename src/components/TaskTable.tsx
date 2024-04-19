@@ -53,8 +53,8 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar, }: TaskTableProp
     return (
         <>
             {tasksRedux.loading ?
-                <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <CircularProgress />
+                <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '50px' }}>
+                    <CircularProgress color='secondary' />
                 </Grid> : (
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: '700px' }} aria-label="customized table">
