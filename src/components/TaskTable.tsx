@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { listTasks } from "../store/modules/task/task.slice";
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -52,41 +52,44 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar, }: TaskTableProp
 
     return (
         <>
-            {tasksRedux.loading ? <CircularProgress /> : (
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: '700px' }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell align="left">Código</StyledTableCell>
-                                <StyledTableCell align="left">Nome</StyledTableCell>
-                                <StyledTableCell align="left">Descrição</StyledTableCell>
-                                <StyledTableCell align="left">Data da Criação</StyledTableCell>
-                                <StyledTableCell align="center">Ações</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {tasksRedux.data.length ? tasksRedux.data.map((item) => (
-                                <StyledTableRow key={item.id}>
-                                    <StyledTableCell component="th" scope="row">
-                                        {item.id}
+            {tasksRedux.loading ?
+                <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <CircularProgress />
+                </Grid> : (
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: '700px' }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell align="left">Código</StyledTableCell>
+                                    <StyledTableCell align="left">Nome</StyledTableCell>
+                                    <StyledTableCell align="left">Descrição</StyledTableCell>
+                                    <StyledTableCell align="left">Data da Criação</StyledTableCell>
+                                    <StyledTableCell align="center">Ações</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {tasksRedux.data.length ? tasksRedux.data.map((item) => (
+                                    <StyledTableRow key={item.id}>
+                                        <StyledTableCell component="th" scope="row">
+                                            {item.id}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="left">{item.name}</StyledTableCell>
+                                        <StyledTableCell align="left">{item.description}</StyledTableCell>
+                                        <StyledTableCell align="left">{format(item.createdAt, 'dd/MM/yyyy')}</StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            <Button sx={{ marginRight: '10px' }} variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button>
+                                            <Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                )) : (<StyledTableRow>
+                                    <StyledTableCell colSpan={5} align='center'>
+                                        <Typography variant='body1' >Nenhuma tarefa para ser listada</Typography>
                                     </StyledTableCell>
-                                    <StyledTableCell align="left">{item.name}</StyledTableCell>
-                                    <StyledTableCell align="left">{item.description}</StyledTableCell>
-                                    <StyledTableCell align="left">{format(item.createdAt, 'dd/MM/yyyy')}</StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <Button sx={{ marginRight: '10px' }} variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button>
-                                        <Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button>
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            )) : (<StyledTableRow>
-                                <StyledTableCell colSpan={5} align='center'>
-                                    <Typography variant='body1' >Nenhuma tarefa para ser listada</Typography>
-                                </StyledTableCell>
-                            </StyledTableRow>)
-                            }
-                        </TableBody>
-                    </Table>
-                </TableContainer>)
+                                </StyledTableRow>)
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>)
             }
         </>
     )

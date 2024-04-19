@@ -86,7 +86,7 @@ const Login: React.FC = () => {
                     minHeight: '100%'
                 }}>
                 </Grid>
-                <Grid item xs={6} md={6} sx={{ display: 'flex', minHeight: '100%', paddingBottom: '30px' }} justifyContent={"center"} alignItems={'center'}>
+                <Grid item xs={12} sm={12} md={6} sx={{ display: 'flex', minHeight: '100%', paddingBottom: '30px' }} justifyContent={"center"} alignItems={'center'}>
                     <Grid container item justifyContent={"center"} sx={{ display: 'flex' }}>
                         <Grid item xs={9}>
                             <Typography sx={{ display: 'flex', justifyContent: 'center', fontFamily: 'DM Sans, sans-serif', fontWeight: '800', fontSize: '25px', color: '#7751d6' }}>Login</Typography>
