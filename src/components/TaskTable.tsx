@@ -75,7 +75,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ editar, deletar, }: TaskTableProp
                                         </StyledTableCell>
                                         <StyledTableCell align="left">{item.name}</StyledTableCell>
                                         <StyledTableCell align="left">{item.description}</StyledTableCell>
-                                        <StyledTableCell align="left">{format(item.createdAt, 'dd/MM/yyyy')}</StyledTableCell>
+                                        <StyledTableCell align="left"> {format(new Date(item.createdAt), 'dd/MM/yyyy')}</StyledTableCell>
                                         <StyledTableCell align="center">
                                             <Button sx={{ marginRight: '10px' }} variant='contained' onClick={() => editar(item.id)} color='success'>Editar</Button>
                                             <Button variant='contained' onClick={() => deletar(item.id)} color='error'>Deletar</Button>

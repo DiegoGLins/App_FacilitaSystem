@@ -125,7 +125,7 @@ const Home: React.FC = () => {
                     <TaskTable isEdit={editMode} editar={edit} deletar={removeTask} />
                 </Grid>
             </Grid>
-            <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1100} onClose={() => setOpenAlert(false)}>
+            <Snackbar className='styleAlert' open={openAlert} autoHideDuration={1400} onClose={() => setOpenAlert(false)}>
                 <Alert variant='filled' onClose={() => setOpenAlert(false)} severity={alertColor}>
                     {alertMessage}
                 </Alert>
