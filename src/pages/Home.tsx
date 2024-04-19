@@ -121,7 +121,7 @@ const Home: React.FC = () => {
                     <StyleInput placeholder='Digite a descrição da tarefa' value={descriptionTask} onChange={(e) => setDescriptionTask(e.target.value)} name='descriptionTask' type='text' />
                     <Button sx={{ marginLeft: '20px' }} onClick={toogleEditOperation} color={editMode ? 'secondary' : 'primary'} variant='contained'>{editMode ? 'Salvar' : 'Cadastar'}</Button>
                 </Grid>
-                <Grid item sx={{ width: '85%' }}>
+                <Grid item xs={9} sx={{ width: '85%' }}>
                     <TaskTable isEdit={editMode} editar={edit} deletar={removeTask} />
                 </Grid>
             </Grid>
