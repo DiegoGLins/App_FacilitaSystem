@@ -111,7 +111,7 @@ const Cadastro: React.FC = () => {
     return (
         <>
             <Grid container sx={{ width: '100vw', minHeight: '100vh' }}>
-                <Grid item xs={6} sx={{
+                <Grid item xs={0} sm={7} md={6} sx={{
                     background: `url(${backgroundCadastro})center/cover no-repeat`,
                     display: "flex",
                     justifyContent: "center",
@@ -119,7 +119,7 @@ const Cadastro: React.FC = () => {
                     minHeight: '100%'
                 }}>
                 </Grid>
-                <Grid item xs={6} md={6} sx={{ display: 'flex', minHeight: '100%', paddingBottom: '30px' }} justifyContent={"center"} alignItems={'center'}>
+                <Grid item xs={12} sm={5} md={6} sx={{ display: 'flex', minHeight: '100%', paddingBottom: '30px' }} justifyContent={"center"} alignItems={'center'}>
                     <Grid container item justifyContent={"center"} sx={{ display: 'flex' }}>
                         <Grid item xs={9}>
                             <Typography sx={{ display: 'flex', justifyContent: 'center', fontFamily: 'DM Sans, sans-serif', fontWeight: '800', fontSize: '25px', color: '#7751d6' }}>Cadastro</Typography>
@@ -132,8 +132,8 @@ const Cadastro: React.FC = () => {
                             <LabelDefault label='Confirme senha' />
                             <InputDefault id='repeatPassword' require value={repeatPassword} action={(e) => setRepeatPassword(e.target.value)} color="secondary" label="Repita a senha criada" type={showRepeatPassword ? 'text' : 'password'} icon={<span onClick={passwordRepeatVisibility}>{showRepeatPassword ? <RemoveRedEyeIcon style={{ padding: '0px 10px 10px 0px' }} /> : <VisibilityOffIcon style={{ padding: '0px 10px 10px 0px' }} />}</span>} />
                             <ButtonDefault type='button' action={handleCreateUser} styleWidth={150} styleHeight={60} customStyle={validate ? 'disabledButton' : 'styleButton'} disable={validate ? true : false} label={laoding ? <CircularProgress color="secondary" /> : "Cadastrar"} />
-                            <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <Typography variant="body1">Já tem cadastro ? <button onClick={() => navUrl('/')} className="link">Fazer login</button></Typography>
+                            <Grid item sx={{ marginTop: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <Typography sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }} variant="body1">Já tem cadastro ? <button onClick={() => navUrl('/')} className="link">Fazer login</button></Typography>
                             </Grid>
                         </Grid>
                     </Grid>
